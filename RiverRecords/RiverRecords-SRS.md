@@ -1,5 +1,4 @@
-# Software Requirements Specification
-# for
+# Software Requirements Specification for
 # RiverRecords
 
 **Version 1.0 approved**
