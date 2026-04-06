@@ -32,7 +32,7 @@
    - 4.3 Personal Catch Log
    - 4.4 AI Trip Assistant
    - 4.5 Authentication and User Accounts
-5. AI Integration — Detailed Design
+5. AI Integration - Detailed Design
 6. System Architecture and Repository Structure
 7. Nonfunctional Requirements
 8. Development Phase Map
@@ -58,7 +58,7 @@
 
 This Software Requirements Specification describes the functional and non-functional requirements for RiverRecords, version 1.0. RiverRecords is a full-stack web application designed to serve fly fishing anglers with automated river condition monitoring, community hatch reporting, a personal catch log with immutable conditions snapshots, and an AI-powered trip planning assistant.
 
-This document covers the complete scope of the v1.0 initial build. Two feature areas — condition-based alert notifications and personal conditions analysis — have been defined and scoped but explicitly deferred to future versions. Their data models are included in this document so that their future implementation requires no schema changes.
+This document covers the complete scope of the v1.0 initial build. Two feature areas: condition-based alert notifications and personal conditions analysis have been defined and scoped but explicitly deferred to future versions. Their data models are included in this document so that their future implementation requires no schema changes.
 
 ### 1.2 Document Conventions
 
@@ -76,7 +76,7 @@ The following conventions are used throughout this document:
 
 This document is written primarily for the solo developer building and maintaining RiverRecords. Secondary audiences include any collaborators, code reviewers, or future contributors who need to understand the system's intended behavior.
 
-**For the developer (primary):** Read the document end to end before beginning implementation. Section 2 provides the product context and constraints that inform every implementation decision. Section 4 is the authoritative reference for feature behavior during development. Return to Section 4 and Section 5 frequently — they define acceptance criteria for each feature.
+**For the developer (primary):** Read the document end to end before beginning implementation. Section 2 provides the product context and constraints that inform every implementation decision. Section 4 is the authoritative reference for feature behavior during development; return to it and Section 5 frequently, as they define acceptance criteria for each feature. Finally, Section 8 provides a general outline for the development of RiverRecords v1.0, ensuring that the system's creation is organized and each step ends with a functional, testable artifact.
 
 **For technical reviewers or collaborators:** Begin with Section 1.4 (Product Scope) and Section 2.1 (Product Perspective) for context, then read Section 4 (System Features) for functional detail. Section 6 (System Architecture) provides the structural overview.
 
@@ -84,11 +84,11 @@ This document is written primarily for the solo developer building and maintaini
 
 ### 1.4 Product Scope
 
-RiverRecords is a web application for fly anglers that eliminates the need to cross-reference multiple tools before a fishing trip. It aggregates real-time river condition data from public government APIs (USGS, NOAA), hosts community-submitted insect hatch observations, and provides each user with a personal catch log that permanently records the conditions present on the day of each catch.
+RiverRecords is a web application for fly anglers that eliminates the need to cross-reference multiple tools before a fishing trip. It aggregates real-time river condition data from public government APIs (USGS, NOAA), hosts community-submitted insect hatch observations, and provides each user with a personal catch log that permanently records the conditions present on the day of each catch. Furthermore, each river is cached and broken into sections that allow users to examine past catch logs and hatch records; this enables anglers to precisely pinpoint their most productive areas for each river.
 
-The application's core value proposition has two components. First, it replaces the pre-trip research workflow — gauge levels, water temperature, weather, and recent hatch activity are synthesized in one place. Second, it creates a personal conditions database for each angler: over time, the catch log reveals what conditions correlate with productive fishing on specific river sections, which no external tool can provide because the data is unique to each user.
+The application's core value proposition has two components. First, it replaces the pre-trip research workflow, as stream gauge levels, water temperature, weather, and recent hatch activity are synthesized in one place, enabling users to change plans and locations quickly. Second, it creates a personal catch log and conditions database for each angler: over time, the catch log reveals what conditions correlate with productive fishing on specific river sections, which no external tool can provide because the data is unique to each user. Once enough hatches and catches have been logged, RiverRecords can be used as a journal for past experiences, as well as a powerful predictive tool to improve fishing yield.
 
-An AI assistant powered by the Anthropic Claude API accepts natural language queries (e.g., "should I fish the Madison this weekend?") and responds using the live conditions data, community hatch reports, and the user's own catch history as context — giving advice grounded in real, current data rather than generic recommendations.
+An AI assistant powered by the Anthropic Claude API accepts natural language queries (e.g., "should I fish the Rush this weekend?") and responds using the live conditions data, community hatch reports, and the user's own catch history as context, giving advice grounded in real, current data rather than generic recommendations.
 
 ### 1.5 References
 
@@ -109,7 +109,7 @@ An AI assistant powered by the Anthropic Claude API accepts natural language que
 
 ### 2.1 Product Perspective
 
-RiverRecords is a new, self-contained product with no predecessor system. It does not replace an existing internal tool and is not a component of a larger platform. It enters a market where anglers currently rely on a fragmented collection of standalone tools — USGS WaterWatch, weather applications, state wildlife agency websites, and community forums such as Reddit and Fishing Reports — none of which are integrated with each other or with a user's personal fishing history.
+RiverRecords is a new, self-contained product with no predecessor system. It does not replace an existing internal tool and is not a component of a larger platform. It enters a market where anglers currently rely on a fragmented collection of standalone tools, such as USGS WaterWatch, weather applications, state wildlife agency websites, and community forums such as Reddit and Fishing Reports, none of which are integrated with each other or with a user's personal fishing history.
 
 The product is a web application hosted on Vercel, backed by a PostgreSQL database and Redis cache on Railway, and authenticated via Clerk. It communicates with four categories of external systems:
 
@@ -184,7 +184,7 @@ The following is a high-level summary of the major function groups. Detailed req
 The core user. Fishes regularly, plans trips based on conditions, and wants a persistent log of their fishing history connected to the conditions that were present. Comfortable with web applications. Not assumed to have technical knowledge beyond normal consumer software use. This user class accesses all features including the catch log, hatch reporting, and AI assistant. The product is designed and optimized for this class.
 
 **Unauthenticated Visitor (Secondary)**
-A user who has not created an account. Can browse the river conditions browser and view community hatch reports in read-only mode. Cannot submit hatch reports, log catches, or access the AI assistant. This class is important for initial discoverability — a visitor should be able to assess the product's value before committing to an account.
+A user who has not created an account. Can browse the river conditions browser and view community hatch reports in read-only mode. Cannot submit hatch reports, log catches, or access the AI assistant. This class is important for initial discoverability, as a visitor should be able to assess the product's value before committing to an account.
 
 **Developer / Administrator (Tertiary)**
 The sole developer building and maintaining the application. Has direct database access via Prisma Studio and can modify the river and section seed data. No dedicated admin UI is required in v1.0. Database management is performed via direct tooling (Prisma CLI, Railway dashboard).
@@ -193,11 +193,11 @@ The sole developer building and maintaining the application. Has direct database
 
 **Client-side:** Any modern web browser with JavaScript enabled (Chrome 114+, Firefox 115+, Safari 16+, Edge 114+). The application must be fully functional on mobile browsers given that anglers frequently check conditions from their phones in the field.
 
-**Server-side:** Node.js 20 LTS runtime on Vercel's serverless edge infrastructure. The Next.js application is deployed as serverless functions — there is no persistent server process.
+**Server-side:** Node.js 20 LTS runtime on Vercel's serverless edge infrastructure. The Next.js application is deployed as serverless functions; there is no persistent server process.
 
-**Database:** PostgreSQL 15 hosted on Railway. Accessed exclusively through the Prisma ORM — no raw SQL is written in application code.
+**Database:** PostgreSQL 15 hosted on Railway. Accessed exclusively through the Prisma ORM, no raw SQL is written in application code.
 
-**Cache:** Redis 7 hosted on Railway. Accessed through the ioredis client. Used for condition data caching only — not for session management (handled by Clerk).
+**Cache:** Redis 7 hosted on Railway. Accessed through the ioredis client. Used for condition data caching only, session management is handled by Clerk.
 
 **Scheduled jobs:** Vercel Cron (free tier) triggers the condition sync endpoint on an hourly schedule.
 
@@ -205,7 +205,7 @@ The sole developer building and maintaining the application. Has direct database
 
 ### 2.5 Design and Implementation Constraints
 
-- **Language:** The entire application — frontend, backend, and database interaction — is written in TypeScript. No JavaScript files. No Python or other server-side language.
+- **Language:** The entire application, frontend, backend, and database interaction, is written in TypeScript. No JavaScript files. No Python or other server-side language.
 - **Framework:** Next.js App Router is the only framework in use. Page Router patterns are not used. All routing follows App Router conventions (server components by default, client components explicitly opted in with `"use client"`).
 - **ORM:** All database interaction goes through Prisma. Raw SQL queries are not permitted in application code except in migration files.
 - **External API calls from browser:** USGS, OpenWeatherMap, and Anthropic API keys must never be exposed to the client. All calls to these services are made from server components or API routes only.
@@ -263,14 +263,14 @@ No formal user manual, tutorial series, or help documentation is planned for v1.
 | `next` (App Router) | Full-stack framework. Server components fetch data at request time on the server; client components handle interactivity in the browser |
 | `react` | UI rendering (bundled with Next.js) |
 | `tailwindcss` | Utility-first CSS framework |
-| `shadcn/ui` | Accessible component primitives (Button, Card, Dialog, Input, Select, etc.) built on Radix UI. Components are copied into the codebase via CLI and are owned locally — not a runtime dependency |
+| `shadcn/ui` | Accessible component primitives (Button, Card, Dialog, Input, Select, etc.) built on Radix UI. Components are copied into the codebase via CLI and are owned locally, not a runtime dependency |
 | `prisma` | TypeScript ORM. Schema is the single source of truth for all data models. Generates a type-safe client. Manages migrations |
 | `@clerk/nextjs` | Authentication SDK. Manages sign-up, sign-in, OAuth, sessions, and middleware integration |
 | `anthropic` | Official Anthropic SDK for Claude API calls |
 | `leaflet` + `react-leaflet` | Interactive map rendering for the river section browser |
 | `recharts` | Chart library for gauge height and temperature trend visualizations |
 | `ioredis` | Redis client for server-side caching |
-| `zod` | Runtime schema validation for all API route inputs — prevents malformed data from reaching the database |
+| `zod` | Runtime schema validation for all API route inputs. Prevents malformed data from reaching the database |
 | `date-fns` | Date manipulation for calendar views, trend chart ranges, and condition timestamp handling |
 
 ### Infrastructure Services
@@ -290,13 +290,13 @@ No formal user manual, tutorial series, or help documentation is planned for v1.
 | `vitest` | Unit testing framework (TypeScript-native, fast, compatible with Next.js) |
 | `@testing-library/react` | Component testing utilities |
 | `prisma studio` | Local database GUI for development inspection and debugging |
-| GitHub Actions | CI pipeline — runs lint and test suite on every push and pull request |
+| GitHub Actions | CI pipeline, runs lint and test suite on every push and pull request |
 
 ### AI Development Stack
 
 | Tool | Role in Development |
 |---|---|
-| Claude Code | Primary development agent — code generation, multi-file changes, debugging, test scaffolding |
+| Claude Code | Primary development agent, handles code generation, multi-file changes, debugging, test scaffolding |
 | Cursor | In-editor completions and targeted single-file edits |
 | Claude.ai (web) | Architectural discussion, prompt engineering, and article drafting |
 | Anthropic Claude API (via `anthropic` SDK) | The AI feature integrated into the product |
@@ -311,7 +311,7 @@ No formal user manual, tutorial series, or help documentation is planned for v1.
 
 **Priority: High**
 
-The conditions browser is the entry point to the application and the first feature a new visitor encounters. It aggregates real-time data from USGS and OpenWeatherMap for each pre-seeded river section and presents it in a unified view — list, detail, and map. This feature is entirely read-only and accessible to unauthenticated visitors, making it the primary discoverability surface for the product.
+The conditions browser is the entry point to the application and the first feature a new visitor encounters. It aggregates real-time data from USGS and OpenWeatherMap for each pre-seeded river section and presents it in a unified view: list, detail, and map. This feature is entirely read-only and accessible to unauthenticated visitors, making it the primary discoverability surface for the product.
 
 This feature has the highest priority in the build because all other features depend on river section data being present and correct. It must be functional before the hatch calendar, catch log, or AI assistant can be developed or tested meaningfully.
 
@@ -332,7 +332,7 @@ This feature has the highest priority in the build because all other features de
 4. System checks Redis for a cached weather forecast for this section's coordinates
    - Cache hit (< 3 hours old): use cached forecast
    - Cache miss: fetch from OpenWeatherMap, write to Redis, use returned forecast
-5. System renders the complete page HTML with conditions panel, trend charts, and hatch calendar — no client-side data fetching is required for the initial render
+5. System renders the complete page HTML with conditions panel, trend charts, and hatch calendar; no client-side data fetching is required for the initial render
 6. Browser displays the fully rendered page
 
 **Sequence 3: User views the map**
@@ -367,7 +367,7 @@ This feature has the highest priority in the build because all other features de
 
 **Priority: High**
 
-The hatch calendar is the community contribution layer of the application. It allows authenticated anglers to log insect hatch observations for specific river sections and view historical hatch reports from all users in a calendar format. Over time, this data reveals seasonal hatch timing patterns that are highly valuable for trip planning and fly selection — and that no automated data source provides.
+The hatch calendar is the community contribution layer of the application. It allows authenticated anglers to log insect hatch observations for specific river sections and view historical hatch reports from all users in a calendar format. Over time, this data reveals seasonal hatch timing patterns that are highly valuable for trip planning and fly selection, a service currently not being provided by any existing software.
 
 This feature depends on the conditions browser and authentication being in place, but can be developed independently of the catch log.
 
@@ -418,7 +418,7 @@ This feature depends on the conditions browser and authentication being in place
 
 **Priority: High**
 
-The catch log is the most differentiated feature of RiverRecords. It gives authenticated anglers a structured, searchable record of their fishing history in which every catch is permanently linked to the exact conditions present on that day. Unlike a simple journal, the conditions snapshot — automatically assembled from live USGS, weather, and community hatch data — transforms each entry into a data point that grows more valuable as the log accumulates.
+The catch log is the most differentiated feature of RiverRecords. It gives authenticated anglers a structured, searchable record of their fishing history in which every catch is permanently linked to the exact conditions present on that day. Unlike a simple journal, the conditions snapshot is automatically assembled from live USGS, weather, and community hatch data, and transforms each entry into a data point that grows more valuable as the log accumulates.
 
 The immutability of the conditions snapshot is a deliberate design principle: the snapshot reflects what conditions were at the time of logging, not what the data shows now. This preserves the historical accuracy of the record even as live conditions change.
 
@@ -478,7 +478,7 @@ The AI Trip Assistant is the most technically distinctive feature of the applica
 
 The assistant is not a general-purpose chatbot. It is constrained by its system prompt to advise only within the scope of the data it has been given, and it is instructed to disclose when that data is missing or stale rather than speculate.
 
-The initial build uses a non-streaming response model: the full response is returned when ready and rendered at once. Streaming is explicitly deferred to a future iteration.
+The initial build uses a non-streaming response model: the full response is returned when ready and rendered at once. Streaming is explicitly deferred to a future iteration. (See Appendix D)
 
 **Priority is Medium rather than High** because the application is fully functional and useful without it. The conditions browser, hatch calendar, and catch log are the core product. The AI assistant is the differentiating feature that makes the product more compelling and the article series more interesting.
 
@@ -562,7 +562,7 @@ The architectural complexity of authentication is not in Clerk itself but in the
 
 - REQ-30 (FR-20): Users shall be able to create an account using email and password, or authenticate using Google OAuth. Both flows are handled by the Clerk hosted UI components.
 - REQ-31 (FR-21): Unauthenticated users shall have read-only access to the river conditions browser (all sections, list, and map views) and the community hatch calendar. No authentication prompt shall be shown for these views unless the user attempts a write action.
-- REQ-32 (FR-22): All write operations — submitting a hatch report, creating a catch log entry — shall require a valid Clerk session. Requests without a valid session shall receive a 401 response before any business logic executes.
+- REQ-32 (FR-22): All write operations, like submitting a hatch report and creating a catch log entry, shall require a valid Clerk session. Requests without a valid session shall receive a 401 response before any business logic executes.
 - REQ-33: A local User record shall be created in PostgreSQL upon first authentication. The local record's primary key shall match the Clerk user ID to enable efficient cross-reference without additional lookups.
 - REQ-34: Session management, token issuance, and credential storage are delegated entirely to Clerk. The application shall not implement custom session storage, password hashing, or token generation.
 
@@ -637,10 +637,19 @@ Error handling covers: missing API key (caught at startup), Anthropic API rate l
 The following design decisions are explicitly identified as material for the technical article series:
 
 - **Structured context vs. JSON:** The current implementation uses a plain-text structured format for the user message. An experiment comparing this to a JSON-formatted context is planned and will be written about.
-- **Data freshness disclosure:** Claude is instructed to surface data staleness. Testing whether it reliably does so — and what happens when it does not — is article material.
-- **Domain accuracy:** Claude has general fly fishing knowledge from training. Where it conflicts with the provided hatch data or catch history, which does it weight? Testing and documenting specific cases is planned.
+     - Determine how to send data to Claude, plain text is more natural and relevant to the model's training data, but JSON is more precise
+     - Cost increase from using JSON format due to increased number of keys
+- **Data freshness disclosure:** Claude is instructed to surface data staleness. Testing whether it reliably does so, and what happens when it does not.
+     - Choosing how often condition data age is displayed
+     - Ensuring Claude reliability notes when data is old, and finding out why it fails to do so when it does
+     - Prompt engineering suggestions to maximize system capabilities and avoid data errors
+- **Domain accuracy:** Claude has general fly fishing knowledge from training. Where it conflicts with the provided hatch data or catch history, which does it weigh? Testing and documenting specific cases is planned.
+     - Finding the balance between user-input data and Claude's inherent fly fishing knowledge
+     - Determining when/how often/ why Claude will override recent data with its general knowledge
 - **Streaming upgrade:** The decision to start non-streaming and upgrade later provides a before/after implementation comparison worth documenting.
-
+     - Start without streaming for minimum time and space complexity
+     - Determine what changes in code after changing to streaming
+     - Analyzing perceived and actual performance, alongside concrete data
 ---
 
 ## 6. System Architecture and Repository Structure
@@ -755,7 +764,7 @@ model River {
   name        String
   state       String
   description String?
-  sections    RiverSection[] // virtual relation — not a column
+  sections    RiverSection[] // virtual relation, not a column
   created_at  DateTime       @default(now())
 }
 ```
@@ -832,7 +841,7 @@ model HatchReport {
 ```
 
 #### CatchLog
-A user's personal catch record with a permanently frozen conditions snapshot. The `conditions_snapshot` is a JSONB column assembled at write time and is immutable after creation — it permanently records the conditions present on the day of the catch regardless of how live data changes afterward.
+A user's personal catch record with a permanently frozen conditions snapshot. The `conditions_snapshot` is a JSONB column assembled at write time and is immutable after creation; it permanently records the conditions present on the day of the catch regardless of how live data changes afterward.
 
 ```prisma
 enum FishingMethod {
@@ -1029,14 +1038,14 @@ CRON_SECRET="..."
 - NFR-8: The `ANTHROPIC_API_KEY`, `CLERK_SECRET_KEY`, `DATABASE_URL`, and `REDIS_URL` environment variables shall only be accessible in server-side code. They shall not be prefixed with `NEXT_PUBLIC_` and shall not appear in any client bundle.
 - NFR-9: Every API route that performs a write operation shall verify the Clerk session token before executing any business logic. A missing or invalid session shall return 401 before any database interaction occurs.
 - NFR-10: Every API route that reads or modifies a user-owned resource (CatchLog, HatchReport) shall verify that the requesting user's Clerk ID matches the resource's `user_id` field. Mismatches shall return 403.
-- NFR-11: All database queries involving user data shall include a `where: { user_id: clerkUserId }` clause. It is not acceptable to fetch all records of a type and filter in application code — the scope restriction must occur at the database query level.
+- NFR-11: All database queries involving user data shall include a `where: { user_id: clerkUserId }` clause. It is not acceptable to fetch all records of a type and filter in application code, the scope restriction must occur at the database query level.
 - NFR-12: Photo uploads shall be validated for file type (JPEG, PNG, WEBP only) and size (maximum 10 MB) before being passed to object storage. Unsupported file types shall return a 400 error with a descriptive message.
 
 ### Software Quality Attributes
 
 - **Maintainability:** All external API interaction is isolated to dedicated modules in `lib/`. No USGS or OpenWeatherMap fetch calls shall appear outside `lib/usgs.ts` and `lib/weather.ts` respectively. This ensures that changes to external API behavior require changes in one place only.
 - **Testability:** `lib/` modules shall be written with dependency injection or functional composition patterns that allow test doubles to substitute for real API calls. No module in `lib/` shall make a network call in its module scope (top-level await); all network calls occur inside exported functions.
-- **Reliability:** The cron job shall be idempotent — running it twice in the same hour shall not duplicate StreamReading records. Duplicate prevention shall be enforced by checking for an existing reading at the same `reading_timestamp` before inserting.
+- **Reliability:** The cron job shall be idempotent in that running it twice in the same hour shall not duplicate StreamReading records. Duplicate prevention shall be enforced by checking for an existing reading at the same `reading_timestamp` before inserting.
 - **Usability:** The application shall be fully navigable on a mobile viewport (minimum 375px width). All interactive elements shall meet WCAG 2.1 AA touch target size requirements. shadcn/ui components are built on Radix UI primitives which meet accessibility requirements by default.
 - **Portability:** The application depends on Vercel-specific features (Cron, serverless functions). If hosting migration is required in the future, the cron functionality would need to be replaced with an equivalent (e.g., GitHub Actions scheduled workflow calling a self-hosted endpoint). This dependency is accepted and documented.
 
@@ -1046,7 +1055,7 @@ CRON_SECRET="..."
 - BR-2: Conditions snapshots on CatchLog entries are immutable after creation. No API route shall permit overwriting a `conditions_snapshot` field after the initial write.
 - BR-3: Unauthenticated users may read river conditions and community hatch reports but may not write any data to the system.
 - BR-4: The AI assistant may only use data belonging to the requesting user when assembling the catch history context. It is not permitted to include or summarize other users' catch data.
-- BR-5: Stream gauge readings are stored as received from USGS without modification. The computed `fishability_score` is derived at query time from the raw reading and the section's configured thresholds — it is never stored directly.
+- BR-5: Stream gauge readings are stored as received from USGS without modification. The computed `fishability_score` is derived at query time from the raw reading and the section's configured thresholds, but it is never stored directly.
 
 ---
 
@@ -1101,7 +1110,7 @@ The phases below define the planned build order. Each phase produces a working, 
 | Conditions Snapshot | A JSON object stored permanently with each CatchLog entry. Records the gauge height, discharge, temperature, weather, and active hatches present at the time of the catch. Immutable after creation. |
 | Cron Job | A scheduled task that runs automatically at a defined interval. In RiverRecords, a Vercel Cron job triggers hourly USGS data ingestion. |
 | Discharge | The volume of water flowing past a point in a river per unit of time, measured in CFS. Higher discharge generally correlates with higher, faster, and more turbid water. |
-| Fishability Score | A computed label (good / fair / poor) derived from comparing a river section's current gauge height and water temperature against its configured ideal ranges. Not stored in the database — computed at query time. |
+| Fishability Score | A computed label (good / fair / poor) derived from comparing a river section's current gauge height and water temperature against its configured ideal ranges. Not stored in the database, instead computed at query time. |
 | Gauge Height | The height of the water surface at a USGS monitoring station, measured in feet above an arbitrary datum. Used as a proxy for water volume and wading difficulty. |
 | Hatch | An insect emergence event in which aquatic insects (mayflies, caddisflies, stoneflies, midges) emerge from the water in large numbers, triggering active surface feeding by trout. |
 | Ideal Range | The configured gauge height and water temperature range for a river section within which conditions are considered favorable for the section's target species. Stored as `ideal_gauge_min`, `ideal_gauge_max`, `ideal_temp_min`, `ideal_temp_max` on the RiverSection model. |
@@ -1130,7 +1139,7 @@ River ──< RiverSection >── StreamReading
                            └── active_hatches[] (from HatchReport, frozen at log time)
 ```
 
-One River has many RiverSections. One RiverSection has many StreamReadings, HatchReports, and CatchLogs. HatchReports and CatchLogs are owned by Users. The CatchLog's `conditions_snapshot` embeds a frozen array of hatch data — it is not a live relation but an immutable copy captured at log time.
+One River has many RiverSections. One RiverSection has many StreamReadings, HatchReports, and CatchLogs. HatchReports and CatchLogs are owned by Users. The CatchLog's `conditions_snapshot` embeds a frozen array of hatch data, the snapshot is not a live relation but an immutable copy captured at log time recording the conditions at the time.
 
 ### B.2 Cron Job State Flow
 
@@ -1207,7 +1216,7 @@ A per-river-section view that aggregates a user's historical catch data to surfa
 Upgrade the AI assistant from a full-response model to a streaming response that renders tokens progressively as they arrive from the Anthropic API. Implementation requires: a `TransformStream` to convert the Anthropic SDK stream format to a browser-readable stream, a custom `useStreamingResponse` React hook, and updates to the AssistantPanel component. No schema changes required. The streaming upgrade is planned as a dedicated technical article topic.
 
 **Expanded State Coverage for Fish Stocking Data**
-The v1.0 build integrates fish stocking data for one US state. Expanding to additional states requires research into each state wildlife agency's data format and access method, as they vary significantly. Implementation is additive — new state-specific fetchers in `lib/` and new seed data.
+The v1.0 build integrates fish stocking data for one US state. Expanding to additional states requires research into each state wildlife agency's data format and access method, as they vary significantly. Implementation is additive, new state-specific fetchers in `lib/` and new seed data.
 
 **Community Hatch Pattern Predictions**
-Algorithmically derived hatch timing predictions based on accumulated community hatch report history, water temperature trends, and historical hatch timing by species. This is a data-availability-gated feature — meaningful predictions require at least one full year of community data. Planned for consideration after the first fishing season of operation.
+Algorithmically derived hatch timing predictions based on accumulated community hatch report history, water temperature trends, and historical hatch timing by species. This is a data-availability-gated feature, as meaningful predictions require at least one full year of community data. Planned for consideration after the first fishing season of operation.
