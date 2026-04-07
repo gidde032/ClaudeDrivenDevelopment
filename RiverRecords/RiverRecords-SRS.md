@@ -788,6 +788,7 @@ model RiverSection {
   readings        StreamReading[]
   hatch_reports   HatchReport[]
   catch_logs      CatchLog[]
+  stocking_events StockingEvent[] // TRIAGED — schema defined, not implemented in v1.0
   created_at      DateTime        @default(now())
 }
 ```
@@ -914,6 +915,23 @@ model Alert {
   is_active        Boolean           @default(true)
   last_triggered_at DateTime?
   created_at       DateTime          @default(now())
+}
+```
+
+
+### StockingEvent (TRIAGED — schema defined, not implemented in v1.0)
+Defined in the schema to avoid a future migration when stocking data is implemented. No StockingEvent-related routes, UI, or cron logic will exist in v1.0. Stocking data is sourced from state wildlife agency APIs, which vary significantly in format; v1.0 targets one state and the fetcher pattern is defined in lib/ but the data is not surfaced in the UI or AI context until a future iteration.
+```prisma
+model StockingEvent {
+  id             Int          @id @default(autoincrement())
+  section_id     Int
+  section        RiverSection @relation(fields: [section_id], references: [id])
+  stocked_date   DateTime     // date the stocking event occurred
+  species        String       // e.g. "Brown Trout", "Rainbow Trout"
+  quantity       Int?         // number of fish stocked, if reported by agency
+  source_agency  String       // e.g. "Montana FWP"
+  source_url     String?      // direct link to agency report if available
+  ingested_at    DateTime     @default(now())
 }
 ```
 
@@ -1096,7 +1114,7 @@ The phases below define the planned build order. Each phase produces a working, 
 ### Reuse and Extensibility Objectives
 
 - The `lib/usgs.ts` module shall be designed with a clean public interface such that it could be extracted as a standalone open-source library in a future iteration without significant refactoring.
-- All Prisma models for triaged features (Alert) shall be defined in the schema from the start so that future implementation requires only new routes and UI, not schema migrations on a production database.
+- All Prisma models for triaged features (Alert, StockingEvent) shall be defined in the schema from the start so that future implementation requires only new routes and UI, not schema migrations on a production database.
 
 ---
 
@@ -1132,13 +1150,15 @@ River ──< RiverSection >── StreamReading
                │
                ├──< HatchReport >── User
                │
-               └──< CatchLog >── User
-                     │
-                     └── conditions_snapshot (JSON, embedded)
-                           └── active_hatches[] (from HatchReport, frozen at log time)
+               ├──< CatchLog >── User
+               │     │
+               │     └── conditions_snapshot (JSON, embedded)
+               │           └── active_hatches[] (from HatchReport, frozen at log time)
+               │
+               └──< StockingEvent [TRIAGED]
 ```
 
-One River has many RiverSections. One RiverSection has many StreamReadings, HatchReports, and CatchLogs. HatchReports and CatchLogs are owned by Users. The CatchLog's `conditions_snapshot` embeds a frozen array of hatch data, the snapshot is not a live relation but an immutable copy captured at log time recording the conditions at the time.
+One River has many RiverSections. One RiverSection has many StreamReadings, HatchReports, and CatchLogs. HatchReports and CatchLogs are owned by Users. The CatchLog's `conditions_snapshot` embeds a frozen array of hatch data, the snapshot is not a live relation but an immutable copy captured at log time recording the conditions at the time. StockingEvent is triaged — the relation is defined in the schema but no routes or UI exist in v1.0.
 
 ### B.2 Cron Job State Flow
 
@@ -1215,7 +1235,7 @@ A per-river-section view that aggregates a user's historical catch data to surfa
 Upgrade the AI assistant from a full-response model to a streaming response that renders tokens progressively as they arrive from the Anthropic API. Implementation requires: a `TransformStream` to convert the Anthropic SDK stream format to a browser-readable stream, a custom `useStreamingResponse` React hook, and updates to the AssistantPanel component. No schema changes required. The streaming upgrade is planned as a dedicated technical article topic.
 
 **Expanded State Coverage for Fish Stocking Data**
-The v1.0 build integrates fish stocking data for one US state. Expanding to additional states requires research into each state wildlife agency's data format and access method, as they vary significantly. Implementation is additive, new state-specific fetchers in `lib/` and new seed data.
+The v1.0 build defines the `StockingEvent` data model and integrates a stocking data fetcher for one US state. The model is defined in the Prisma schema so no migration is required when the feature is surfaced in the UI. Expanding to additional states requires research into each state wildlife agency's data format and access method, as they vary significantly. Implementation is additive, new state-specific fetchers in `lib/` and new seed data. No schema migration required.
 
 **Community Hatch Pattern Predictions**
 Algorithmically derived hatch timing predictions based on accumulated community hatch report history, water temperature trends, and historical hatch timing by species. This is a data-availability-gated feature, as meaningful predictions require at least one full year of community data. Planned for consideration after the first fishing season of operation.
